@@ -7,48 +7,64 @@ public class Percolation{
     public int size;
     public int opensites;
     
-    public Percolation(int N){
+    public Percolation(int n){
+        if(n>0){
         opensites=0;
-        size=N;
-        grid = new boolean[N][N];
-        uf = new WeightedQuickUnionUF(N*N+2);
-        for(int i=0;i<N;i++)
-            for(int j=0;j<N;j++){
+        size=n;
+        grid = new boolean[n][n];
+        uf = new WeightedQuickUnionUF(n*n+2);
+        for(int i=0;i<n;i++)
+            for(int j=0;j<n;j++){
                 grid[i][j]=false;
                 if(i==0){
                     uf.union(0,j+1);
                 }
-                if(i==(N-1)){
-                    uf.union(N*N+1,i*(N)+j+1);
+                if(i==(n-1)){
+                    uf.union(n*n+1,i*(n)+j+1);
                 }
             }
+        }else{
+            throw new java.lang.IllegalArgumentException("");
+        }
     }
     
     public void open(int row,int col){
-        if(!isOpen(row,col)){
-        grid[row][col]=true;
-        int A=row*size+col+1;
-        if(row-1>=0 && grid[row-1][col]==true)
-            uf.union(A,A-size);
-            if(row+1<size && grid[row+1][col]==true)
-                uf.union(A,A+size);
-            if(col-1>=0 && grid[row][col-1]==true)
-                uf.union(A,A-1);
-            if(col+1<size && grid[row][col+1]==true)
-                uf.union(A,A+1);
-        opensites+=1;
+        if(row<size && row >=0 && col<size && col >=0){
+            if(!isOpen(row,col)){
+                grid[row][col]=true;
+                int A=row*size+col+1;
+                if(row-1>=0 && grid[row-1][col]==true)
+                    uf.union(A,A-size);
+                if(row+1<size && grid[row+1][col]==true)
+                    uf.union(A,A+size);
+                if(col-1>=0 && grid[row][col-1]==true)
+                    uf.union(A,A-1);
+                if(col+1<size && grid[row][col+1]==true)
+                    uf.union(A,A+1);
+                opensites+=1;
+            }
+        }else{
+            throw new java.lang.IndexOutOfBoundsException("");
         }
     }
     
     public boolean isOpen(int row,int col){
+        if(row<size && row >=0 && col<size && col >=0){
         return grid[row][col];
+        }else{
+            throw new java.lang.IndexOutOfBoundsException("");
+        }
     }
     
     public boolean isFull(int row,int col){
+        if(row<size && row >=0 && col<size && col >=0){
         if(isOpen(row,col))
             if(uf.connected(row*size+col+1,0))
                 return true;
          return false;
+         }else{
+            throw new java.lang.IndexOutOfBoundsException("");
+        }
     }
     
     public int numberOfOpenSites(){
@@ -59,19 +75,26 @@ public class Percolation{
         return uf.connected(0,size*size+1);
     }
     
+    public void printGrid(){
+    for(int x = 0;x < size;x++){
+      for(int y = 0; y < size; y++){
+        String mark=isOpen(x,y) ? "0": "X";
+        System.out.print(mark+" ");
+
+      }
+      System.out.println();
+    }
+  }
+    
     public static void main(String[] args){
-    int size=100;
-      Percolation perc = new Percolation(size);
-      System.out.println("Before anything");
-      //perc.printGrid();
-      while(!perc.percolates()){
+        int size=10;
+        Percolation perc = new Percolation(size);
+        System.out.println();
+        while(!perc.percolates()){
         int x=StdRandom.uniform(0,size);
         int y=StdRandom.uniform(0,size);
-        
         perc.open(x,y);
-        //perc.printGrid();
-        
         }
-    System.out.println(perc.numberOfOpenSites());
-    }
+        perc.printGrid();
+        }
 }
