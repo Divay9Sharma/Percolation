@@ -1,0 +1,77 @@
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class Percolation{
+    WeightedQuickUnionUF uf;
+    boolean[][] grid;
+    public int size;
+    public int opensites;
+    
+    public Percolation(int N){
+        opensites=0;
+        size=N;
+        grid = new boolean[N][N];
+        uf = new WeightedQuickUnionUF(N*N+2);
+        for(int i=0;i<N;i++)
+            for(int j=0;j<N;j++){
+                grid[i][j]=false;
+                if(i==0){
+                    uf.union(0,j+1);
+                }
+                if(i==(N-1)){
+                    uf.union(N*N+1,i*(N)+j+1);
+                }
+            }
+    }
+    
+    public void open(int row,int col){
+        if(!isOpen(row,col)){
+        grid[row][col]=true;
+        int A=row*size+col+1;
+        if(row-1>=0 && grid[row-1][col]==true)
+            uf.union(A,A-size);
+            if(row+1<size && grid[row+1][col]==true)
+                uf.union(A,A+size);
+            if(col-1>=0 && grid[row][col-1]==true)
+                uf.union(A,A-1);
+            if(col+1<size && grid[row][col+1]==true)
+                uf.union(A,A+1);
+        opensites+=1;
+        }
+    }
+    
+    public boolean isOpen(int row,int col){
+        return grid[row][col];
+    }
+    
+    public boolean isFull(int row,int col){
+        if(isOpen(row,col))
+            if(uf.connected(row*size+col+1,0))
+                return true;
+         return false;
+    }
+    
+    public int numberOfOpenSites(){
+        return opensites;
+    }
+   
+    public boolean percolates(){
+        return uf.connected(0,size*size+1);
+    }
+    
+    public static void main(String[] args){
+    int size=100;
+      Percolation perc = new Percolation(size);
+      System.out.println("Before anything");
+      //perc.printGrid();
+      while(!perc.percolates()){
+        int x=StdRandom.uniform(0,size);
+        int y=StdRandom.uniform(0,size);
+        
+        perc.open(x,y);
+        //perc.printGrid();
+        
+        }
+    System.out.println(perc.numberOfOpenSites());
+    }
+}
