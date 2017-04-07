@@ -1,2 +1,2 @@
 # Percolation
-Percolation code in java, imports 'WeightedQuickUnionUF.java' library from algs4
+Percolation code in java, imports 'WeightedQuickUnionUF.java' library from algs4 package.
